@@ -1,4 +1,7 @@
 import { useMemo } from 'react';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faCheck } from '@fortawesome/free-solid-svg-icons';
 import type { League } from '../types/league';
 
 interface SportFilterProps {
@@ -13,28 +16,54 @@ export const SportFilter = ({ leagues, selectedSport, onSportChange }: SportFilt
     return Array.from(uniqueSports).sort();
   }, [leagues]);
 
+  const displayValue = selectedSport || 'All Sports';
+
   return (
-    <div className="mb-6">
-      <label htmlFor="sport-filter" className="block text-sm font-medium text-gray-700 mb-2">
+    <div className="mb-8">
+      <label className="block text-sm font-semibold text-slate-300 mb-3">
         Filter by Sport
       </label>
-      <select
-        id="sport-filter"
-        className="block w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-        value={selectedSport}
-        onChange={(e) => onSportChange(e.target.value)}
-        aria-describedby="sport-filter-description"
-      >
-        <option value="">All Sports</option>
-        {sports.map(sport => (
-          <option key={sport} value={sport}>
-            {sport}
-          </option>
-        ))}
-      </select>
-      <div id="sport-filter-description" className="sr-only">
-        Filter the list of leagues by selecting a specific sport
-      </div>
+      <Listbox value={selectedSport} onChange={onSportChange}>
+        <ListboxButton className="relative w-full max-w-sm cursor-default rounded-xl bg-slate-800/70 backdrop-blur-sm py-3 pl-4 pr-10 text-left shadow-sm ring-1 ring-inset ring-slate-700/60 hover:bg-slate-700/90 hover:ring-slate-600/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 transition-all duration-200 sm:text-sm">
+          <span className="block truncate font-medium text-slate-200">{displayValue}</span>
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <FontAwesomeIcon icon={faChevronDown} className="h-4 w-4 text-slate-400" />
+          </span>
+        </ListboxButton>
+
+        <ListboxOptions className="absolute z-20 mt-2 max-h-60 w-full max-w-sm overflow-auto rounded-xl bg-slate-800/95 backdrop-blur-md py-2 text-base shadow-xl ring-1 ring-slate-700/60 focus-visible:outline-none sm:text-sm border border-slate-700/60">
+          <ListboxOption
+            key="all"
+            value=""
+            className="group relative cursor-default select-none py-3 pl-4 pr-9 text-slate-200 data-[focus]:bg-gradient-to-r data-[focus]:from-emerald-500/20 data-[focus]:to-teal-500/20 data-[focus]:text-white transition-colors"
+          >
+            <span className="block truncate font-normal group-data-[selected]:font-semibold">
+              All Sports
+            </span>
+            {selectedSport === '' && (
+              <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-emerald-400">
+                <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
+              </span>
+            )}
+          </ListboxOption>
+          {sports.map((sport) => (
+            <ListboxOption
+              key={sport}
+              value={sport}
+              className="group relative cursor-default select-none py-3 pl-4 pr-9 text-slate-200 data-[focus]:bg-gradient-to-r data-[focus]:from-emerald-500/20 data-[focus]:to-teal-500/20 data-[focus]:text-white transition-colors"
+            >
+              <span className="block truncate font-normal group-data-[selected]:font-semibold">
+                {sport}
+              </span>
+              {selectedSport === sport && (
+                <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-emerald-400">
+                  <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
+                </span>
+              )}
+            </ListboxOption>
+          ))}
+        </ListboxOptions>
+      </Listbox>
     </div>
   );
 };
